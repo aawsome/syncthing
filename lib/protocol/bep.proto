@@ -111,6 +111,8 @@ message FileInfo {
     bytes              blocks_hash    = 18;
     FileInfoType       type           = 2;
     uint32             permissions    = 4;
+    uint32             uid            = 19;
+    uint32             gid            = 20;
     int32              modified_ns    = 11;
     int32              block_size     = 13 [(gogoproto.customname) = "RawBlockSize"];
 

@@ -614,6 +614,11 @@ func (f *sendReceiveFolder) handleDir(file protocol.FileInfo, snap *db.Snapshot,
 				return err
 			}
 
+			l.Infof("Lchown Dir. name: %s uid: %d gid: %d", path, file.Uid, file.Gid)
+			if err = f.fs.Lchown(path, int(file.Uid), int(file.Gid)); err != nil {
+				return err
+			}
+
 			// Mask for the bits we want to preserve and add them in to the
 			// directories permissions.
 			return f.fs.Chmod(path, mode|(info.Mode()&retainBits))
@@ -1523,6 +1528,11 @@ func (f *sendReceiveFolder) performFinish(file, curFile protocol.FileInfo, hasCu
 	// leave the temp file in place for reuse.
 	if err := osutil.RenameOrCopy(f.fs, f.fs, tempName, file.Name); err != nil {
 		return err
+	}
+
+	// chown
+	if err := f.fs.Lchown(file.Name, int(file.Uid), int(file.Gid)); err != nil {
+		l.Infof("failed to chown %d:%d %s. error: %v", file.Gid, file.Uid, file.Name, err)
 	}
 
 	// Set the correct timestamp on the new file

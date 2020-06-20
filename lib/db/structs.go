@@ -161,6 +161,8 @@ func (f FileInfoTruncated) copyToFileInfo() protocol.FileInfo {
 		BlocksHash:    f.BlocksHash,
 		Type:          f.Type,
 		Permissions:   f.Permissions,
+		Uid:           f.Uid,
+		Gid:           f.Gid,
 		ModifiedNs:    f.ModifiedNs,
 		RawBlockSize:  f.RawBlockSize,
 		LocalFlags:    f.LocalFlags,

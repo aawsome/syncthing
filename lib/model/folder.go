@@ -399,6 +399,7 @@ func (f *folder) scanSubdirs(subDirs []string) error {
 		LocalFlags:            f.localFlags,
 		ModTimeWindow:         f.ModTimeWindow(),
 		EventLogger:           f.evLogger,
+		GetOwnerGroup:         f.OwnershipConfig.getOwnerGroup,
 	})
 
 	batchFn := func(fs []protocol.FileInfo) error {

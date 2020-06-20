@@ -26,6 +26,8 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
+type GetOwnerGroupFunc func(fs.FileInfo) (uint32, uint32)
+
 type Config struct {
 	// Folder for which the walker has been created
 	Folder string
@@ -59,6 +61,8 @@ type Config struct {
 	ModTimeWindow time.Duration
 	// Event logger to which the scan progress events are sent
 	EventLogger events.Logger
+	// Function to get global UID/GID
+	GetOwnerGroup GetOwnerGroupFunc
 }
 
 type CurrentFiler interface {
@@ -596,8 +600,9 @@ func (noCurrentFiler) CurrentFile(name string) (protocol.FileInfo, bool) {
 	return protocol.FileInfo{}, false
 }
 
-func CreateFileInfo(fi fs.FileInfo, name string, filesystem fs.Filesystem) (protocol.FileInfo, error) {
+func CreateFileInfo(fi fs.FileInfo, name string, filesystem fs.Filesystem, GetUidGid GetOwnerGroupFunc) (protocol.FileInfo, error) {
 	f := protocol.FileInfo{Name: name}
+	f.Uid, f.Gid = GetUidGid(fi)
 	if fi.IsSymlink() {
 		f.Type = protocol.FileInfoTypeSymlink
 		target, err := filesystem.ReadSymlink(name)
